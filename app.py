@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, request, abort
 from main import Main
 from SQLiter import SQLiter
 import const
@@ -19,7 +19,12 @@ def post_data():
 
     a = Main(chat_id, user_answer, db)
     db.close()
-    return a.get_response(), 201
+    return a.get_response(), 200
+
+
+@app.route('/', methods=['GET'])
+def get_data():
+    return const.NOTHING_HERE_YET
 
 
 if __name__ == '__main__':
