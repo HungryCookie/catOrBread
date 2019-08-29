@@ -1,16 +1,18 @@
-import config
-from SQLiter import SQLiter
+import const
+import datetime
 
 
 class Main:
 
     response = ""
 
-    def __init__(self, user_id, answer):
-        # print(user_id)
-        # print(answer)
+    def __init__(self, user_id, answer, database):
+
         self.user_id = user_id
         self.answer = answer
+        self.db = database
+        current_date_time = datetime.datetime.now()
+        self.logging(current_date_time)
 
         if answer.lower() == '/start':
             self.start()
@@ -21,37 +23,54 @@ class Main:
         return self.response
 
     def start(self):
-        db = SQLiter(config.DATABASE_NAME)
-        if not db.check_user(self.user_id):
-            db.set_new_user(self.user_id)
+        if not self.db.check_user(self.user_id):
+            self.db.set_new_user(self.user_id)
+
         else:
-            db.set_user_state(self.user_id, 0)
-        db.close()
-        self.response = config.WELCOME_MESSAGE
+            self.db.set_user_state(self.user_id, 0)
 
+        self.response = const.WELCOME_MESSAGE
+
+    """
+    State 0 - /start initialization
+    State 1 - positive answer track
+    State -1 - end of the track   
+    """
     def dialog(self):
-        db = SQLiter(config.DATABASE_NAME)
-        if self.answer.lower() in config.NEGATIVE_STATEMENTS:
-            if db.get_user_state(self.user_id) == 0:  # The tutorial is completed TODO statistics
-                db.set_user_state(self.user_id, -1)
-                self.response = config.NOT_BREAD_MESSAGE
+        if self.answer.lower() in const.NEGATIVE_STATEMENTS:
+            if self.db.get_user_state(self.user_id) == 0:  # The tutorial is completed TODO statistics
+                self.db.set_user_state(self.user_id, -1)
+                self.response = const.NOT_BREAD_MESSAGE
+                self.increase()
 
-            elif db.get_user_state(self.user_id) == 1:
-                db.set_user_state(self.user_id, -1)
-                self.response = config.NOT_CAT_MESSAGE
+            elif self.db.get_user_state(self.user_id) == 1:
+                self.db.set_user_state(self.user_id, -1)
+                self.response = const.NOT_CAT_MESSAGE
+                self.increase()
 
-        elif self.answer.lower() in config.POSITIVE_STATEMENTS:
-            if db.get_user_state(self.user_id) == 0:
-                db.set_user_state(self.user_id, 1)
-                self.response = config.MAYBE_CAT_BREAD_MESSAGE
+        elif self.answer.lower() in const.POSITIVE_STATEMENTS:
+            if self.db.get_user_state(self.user_id) == 0:
+                self.db.set_user_state(self.user_id, 1)
+                self.response = const.MAYBE_CAT_BREAD_MESSAGE
 
-            elif db.get_user_state(self.user_id) == 1:
-                db.set_user_state(self.user_id, -1)
-                self.response = config.NOT_BREAD_MESSAGE
-        db.close()
+            elif self.db.get_user_state(self.user_id) == 1:
+                self.db.set_user_state(self.user_id, -1)
+                self.response = const.NOT_BREAD_MESSAGE
+                self.increase()
+        else:
+            # TODO handle messages that are not considered as answers
+            self.answer = const.INAPPROPRIATE_MESSAGE
 
+    """
+    Accumulating info about user's overall walkthrough's
+    """
+    def increase(self):
+        finished_times = self.db.get_finished_times(self.user_id) + 1
+        self.db.set_finished_times(self.user_id, finished_times)
 
-
-#
-# a = Main(3, 'yes')
-# a.start()
+    """
+    Tracking all operations users do
+    """
+    def logging(self, current_date_time):
+        previous_state = self.db.get_user_state(self.user_id)
+        self.db.write_log(current_date_time, self.user_id, self.answer, previous_state)

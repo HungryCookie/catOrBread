@@ -1,16 +1,24 @@
 from flask import Flask, jsonify, request, abort
-import main
+from main import Main
+from SQLiter import SQLiter
+import const
 
 app = Flask(__name__)
 
 
-@app.route('/cb', methods=['POST'])
+@app.route('/game', methods=['POST'])
 def post_data():
     if not request.json:
         abort(400)
-    chat_id = request.json['user_id']
-    user_answer = request.json['answer']
-    a = main.Main(chat_id, user_answer)
+
+    db = SQLiter(const.DATABASE_NAME)
+
+    body = request.json
+    chat_id = body.get('user_id')
+    user_answer = body.get('answer')
+
+    a = Main(chat_id, user_answer, db)
+    db.close()
     return a.get_response(), 201
 
 

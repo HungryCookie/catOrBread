@@ -1,5 +1,5 @@
 import sqlite3
-import config
+import const
 
 
 class SQLiter:
@@ -16,7 +16,7 @@ class SQLiter:
         with self.connection:
             self.cursor.execute('insert into user_state (user_id, state) values (?, ?)', (user_id, 0))
 
-    def update_user_state(self, user_id):
+    def increment_user_state(self, user_id):
         with self.connection:
             new_state = self.get_user_state(user_id) + 1
             self.cursor.execute('update user_state set state = ? where user_id = ?', (new_state, user_id))
@@ -36,15 +36,18 @@ class SQLiter:
                 return True
         return False
 
+    def set_finished_times(self, user_id, finished_times):
+        with self.connection:
+            self.cursor.execute('update user_state set finished_times = ? where user_id = ?', (finished_times, user_id))
 
+    def get_finished_times(self, user_id):
+        with self.connection:
+            return self.cursor.execute('select finished_times from user_state where user_id = ?', (user_id,)).fetchone()[0]
 
-
+    def write_log(self, message_time, user_id, answer, previous_state):
+        with self.connection:
+            return self.cursor.execute('insert into log_info (message_time, user_id, answer, prev_state) '
+                                       'values (?, ?, ?, ?)', (message_time, user_id, answer, previous_state))
 
     def close(self):
         self.connection.close()
-
-
-# db = SQLiter(config.DATABASE_NAME)
-# db.update_user_state(1)
-# print(db.get_state(1))
-# db.close()
