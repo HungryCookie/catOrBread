@@ -16,8 +16,5 @@ __app.py__
 
 Для обращения к боту:
 В __post__ запросе в боди передается `user_id` и `answer`
-в __json__ формате, пример:
-`{
-  'user_id': #somenumber,
-  'answer': 'sth here'
-}`
+в __json__ (__content_type__="application/json"), пример:
+`{'user_id': #somenumber, 'answer': 'sth here'}`
