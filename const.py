@@ -1,4 +1,4 @@
-DATABASE_NAME = 'db'
+DATABASE_NAME = 'db.db'
 
 POSITIVE_STATEMENTS = ['да', 'конечно', 'ага', 'пожалуй', '+']
 NEGATIVE_STATEMENTS = ['нет', 'нет,конечно', 'ноуп', 'ноуп', 'найн', '-']
