@@ -1,6 +1,6 @@
 from flask import Flask, request, abort
-from main import Main
 from SQLiter import SQLiter
+from main import Main
 import const
 
 app = Flask(__name__)

@@ -1,8 +1,8 @@
 import unittest
 import os
+import json
 from app import app
 import const
-import json
 
 
 class TestApp(unittest.TestCase):
