@@ -11,6 +11,7 @@
 
 ## Как запускать
 
+### Способ 1
 Просто запустить python файл:
 __app.py__
 
@@ -18,3 +19,10 @@ __app.py__
 В __post__ запросе в боди передается `user_id` и `answer`
 в __json__ (__content_type__="application/json"), пример:
 `{'user_id': #somenumber, 'answer': 'sth here'}`
+
+
+### Способ 2
+Используя Dockerfile (тк используем sqlite вполне достаточно 1 контейнера),
+строим и развертываем контейнер:
+- `docker build <tag>`
+- `docker run -p5000:5000 <tag>`
