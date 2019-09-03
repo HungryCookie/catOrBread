@@ -24,5 +24,5 @@ __app.py__
 ### Способ 2
 Используя Dockerfile (тк используем sqlite вполне достаточно 1 контейнера),
 строим и развертываем контейнер:
-- `docker build <tag>`
+- `docker build -t <tag>`
 - `docker run -p5000:5000 <tag>`
